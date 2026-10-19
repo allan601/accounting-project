@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首頁 - 簡易記帳本</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 语义化标签：Header 和 Nav -->
+    <header>
+        <h1>💰 簡易記帳本</h1>
+        <nav aria-label="主選單">
+            <ul>
+                <li><a href=" " aria-current="page">首頁 (記帳)</a ></li>
+                <li><a href="records.html">消費明細</a ></li>
+                <li><a href="stats.html">統計圖表</a ></li>
+                <li><a href="about.html">關於本站</a ></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- 數據匯總 -->
+        <section class="summary" aria-label="帳目匯總">
+            <div class="summary-item">
+                <span>總餘額</span>
+                <strong class="balance" id="balance">0</strong>
+            </div>
+            <div class="summary-item">
+                <span>總收入</span>
+                <strong class="income" id="income">0</strong>
+            </div>
+            <div class="summary-item">
+                <span>總支出</span>
+                <strong class="expense" id="expense">0</strong>
+            </div>
+        </section>
+
+        <!-- 新增記錄表單 -->
+        <section class="form-card">
+            <h2>新增記錄</h2>
+            <form id="record-form">
+                <div class="form-group">
+                    <label for="date" class="sr-only">日期</label>
+                    <input type="date" id="date" required>
+                    
+                    <label for="type" class="sr-only">類型</label>
+                    <select id="type" required>
+                        <option value="expense">支出</option>
+                        <option value="income">收入</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="amount" class="sr-only">金額</label>
+                    <input type="number" id="amount" placeholder="金額" step="0.01" min="0" required>
+                    
+                    <label for="note" class="sr-only">備註</label>
+                    <input type="text" id="note" placeholder="備註 (選填)">
+                </div>
+                <button type="submit">新增記錄</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 簡易記帳本作業</p >
+    </footer>
+
+    <script>
+        // 此处省略了获取和保存的代码，直接进行首页的渲染逻辑
+        const STORAGE_KEY = 'accounting_records';
+        
+        function getRecords() {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        }
+
+        function renderSummary() {
+            const records = getRecords();
+            let totalIncome = 0;
+            let totalExpense = 0;
+            
+            records.forEach(record => {
+                if (record.type === 'income') totalIncome += record.amount;
+                else totalExpense += record.amount;
+            });
+
+            document.getElementById('balance').textContent = (totalIncome - totalExpense).toFixed(2);
+            document.getElementById('income').textContent = totalIncome.toFixed(2);
+            document.getElementById('expense').textContent = totalExpense.toFixed(2);
+        }
+
+        document.getElementById('record-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const records = getRecords();
+            records.push({
+                id: Date.now().toString(),
+                date: document.getElementById('date').value,
+                type: document.getElementById('type').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                note: document.getElementById('note').value.trim()
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            renderSummary();
+            
+            // 重置表单并给予反馈
+            document.getElementById('amount').value = '';
+            document.getElementById('note').value = '';
+            alert('新增成功！可前往「消費明細」查看。');
+        });
+
+        // 初始化日期并渲染
+        document.getElementById('date').valueAsDate = new Date();
+        renderSummary();
+    </script>
+</body>
+</html>
