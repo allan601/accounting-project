@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>統計圖表 - 簡易記帳本</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>💰 簡易記帳本</h1>
+        <nav aria-label="主選單">
+            <ul>
+                <li><a href=" ">首頁 (記帳)</a ></li>
+                <li><a href="records.html">消費明細</a ></li>
+                <li><a href="stats.html" aria-current="page">統計圖表</a ></li>
+                <li><a href="about.html">關於本站</a ></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="form-card">
+            <h2>📊 簡易數據分析</h2>
+            <p>根據您目前的紀錄，以下是您的花費狀況：</p >
+            <br>
+            <div id="stats-content">
+                <!-- 由 JS 填入 -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 簡易記帳本作業</p >
+    </footer>
+
+    <script>
+        const STORAGE_KEY = 'accounting_records';
+        const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        const statsEl = document.getElementById('stats-content');
+
+        if (records.length === 0) {
+            statsEl.innerHTML = '<p>目前沒有資料可以分析。</p >';
+        } else {
+            const count = records.length;
+            const expenseRecords = records.filter(r => r.type === 'expense');
+            let maxExpense = 0;
+            
+            expenseRecords.forEach(r => {
+                if (r.amount > maxExpense) maxExpense = r.amount;
+            });
+
+            statsEl.innerHTML = `
+                <ul style="list-style-type: none; line-height: 2;">
+                    <li>📌 總計共有 <strong>${count}</strong> 筆紀錄。</li>
+                    <li>💸 單筆最高支出金額為：<strong style="color:var(--expense-color)">$${maxExpense.toFixed(2)}</strong></li>
+                </ul>
+            `;
+        }
+    </script>
+</body>
+</html>
