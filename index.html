@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Simple Accounting</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .hero-section { background: var(--card-bg); padding: 40px 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .hero-section h2 { font-size: 36px; color: var(--text-color); margin-bottom: 5px; }
+        .hero-section .subtitle { color: #7f8c8d; font-size: 16px; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
+        .hero-section h3 { font-size: 22px; margin-bottom: 15px; color: var(--text-color); }
+        .site-index-list { list-style-type: disc; margin-left: 20px; line-height: 2.2; }
+        .site-index-list li { color: var(--text-color); }
+        .site-index-list a { color: #3498db; text-decoration: underline; font-weight: 500; transition: color 0.2s; }
+        .site-index-list a:hover { color: var(--primary-color); }
+    </style>
 </head>
 <body>
     <header>
@@ -14,55 +24,70 @@
         </div>
         <nav aria-label="Main Menu">
             <ul>
-                <li><a href="index.html" aria-current="page">Home (Record)</a ></li>
+                <li><a href="index.html" aria-current="page">Home</a ></li>
                 <li><a href="records.html">Records</a ></li>
                 <li><a href="stats.html">Statistics</a ></li>
                 <li><a href="about.html">About</a ></li>
+                <li><a href="author.html">Author</a ></li>
             </ul>
         </nav>
     </header>
 
     <main class="container">
-        <!-- Summary -->
-        <section class="summary" aria-label="Account Summary">
-            <div class="summary-item">
-                <span>Total Balance</span>
-                <strong class="balance" id="balance">0</strong>
-            </div>
-            <div class="summary-item">
-                <span>Total Income</span>
-                <strong class="income" id="income">0</strong>
-            </div>
-            <div class="summary-item">
-                <span>Total Expense</span>
-                <strong class="expense" id="expense">0</strong>
-            </div>
+        <section class="hero-section">
+            <h2>Welcome to My Project</h2>
+            <p class="subtitle">Computer Science Final Project — a static web app built with pure HTML, CSS, and JS.</p >
+            
+            <h3>On this site</h3>
+            <ul class="site-index-list">
+                <li><a href="#accounting-tool">Accounting Tool</a > — add new income and expenses below</li>
+                <li><a href="records.html">Records</a > — view and manage your transaction history</li>
+                <li><a href="stats.html">Statistics</a > — data analysis and spending overview</li>
+                <li><a href="about.html">About</a > — how this project was built</li>
+                <li><a href="author.html">Author Profile</a > — more about the developer behind this project</li>
+            </ul>
         </section>
 
-        <!-- Add Record Form -->
-        <section class="form-card">
-            <h2>Add New Record</h2>
-            <form id="record-form">
-                <div class="form-group">
-                    <label for="date" class="sr-only">Date</label>
-                    <input type="date" id="date" required>
-                    
-                    <label for="type" class="sr-only">Type</label>
-                    <select id="type" required>
-                        <option value="expense">Expense</option>
-                        <option value="income">Income</option>
-                    </select>
+        <div id="accounting-tool">
+            <section class="summary" aria-label="Account Summary">
+                <div class="summary-item">
+                    <span>Total Balance</span>
+                    <strong class="balance" id="balance">0</strong>
                 </div>
-                <div class="form-group">
-                    <label for="amount" class="sr-only">Amount</label>
-                    <input type="number" id="amount" placeholder="Amount" step="0.01" min="0" required>
-                    
-                    <label for="note" class="sr-only">Note</label>
-                    <input type="text" id="note" placeholder="Note (Optional)">
+                <div class="summary-item">
+                    <span>Total Income</span>
+                    <strong class="income" id="income">0</strong>
                 </div>
-                <button type="submit">Add Record</button>
-            </form>
-        </section>
+                <div class="summary-item">
+                    <span>Total Expense</span>
+                    <strong class="expense" id="expense">0</strong>
+                </div>
+            </section>
+
+            <section class="form-card">
+                <h2>Add New Record</h2>
+                <form id="record-form">
+                    <div class="form-group">
+                        <label for="date" class="sr-only">Date</label>
+                        <input type="date" id="date" required>
+                        
+                        <label for="type" class="sr-only">Type</label>
+                        <select id="type" required>
+                            <option value="expense">Expense</option>
+                            <option value="income">Income</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount" class="sr-only">Amount</label>
+                        <input type="number" id="amount" placeholder="Amount" step="0.01" min="0" required>
+                        
+                        <label for="note" class="sr-only">Note</label>
+                        <input type="text" id="note" placeholder="Note (Optional)">
+                    </div>
+                    <button type="submit">Add Record</button>
+                </form>
+            </section>
+        </div>
     </main>
 
     <footer>
@@ -70,68 +95,39 @@
     </footer>
 
     <script>
-        // ========== Accounting Logic ==========
         const STORAGE_KEY = 'accounting_records';
-        
-        function getRecords() {
-            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-        }
-
+        function getRecords() { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
         function renderSummary() {
             const records = getRecords();
-            let totalIncome = 0;
-            let totalExpense = 0;
-            
+            let totalIncome = 0, totalExpense = 0;
             records.forEach(record => {
                 if (record.type === 'income') totalIncome += record.amount;
                 else totalExpense += record.amount;
             });
-
             document.getElementById('balance').textContent = (totalIncome - totalExpense).toFixed(2);
             document.getElementById('income').textContent = totalIncome.toFixed(2);
             document.getElementById('expense').textContent = totalExpense.toFixed(2);
         }
-
         document.getElementById('record-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const records = getRecords();
-            records.push({
-                id: Date.now().toString(),
-                date: document.getElementById('date').value,
-                type: document.getElementById('type').value,
-                amount: parseFloat(document.getElementById('amount').value),
-                note: document.getElementById('note').value.trim()
-            });
+            records.push({ id: Date.now().toString(), date: document.getElementById('date').value, type: document.getElementById('type').value, amount: parseFloat(document.getElementById('amount').value), note: document.getElementById('note').value.trim() });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
             renderSummary();
-            
             document.getElementById('amount').value = '';
             document.getElementById('note').value = '';
             alert('Record added successfully! Go to "Records" to view.');
         });
-
         document.getElementById('date').valueAsDate = new Date();
         renderSummary();
 
-        // ========== Dark Mode Logic ==========
         const themeToggleBtn = document.getElementById('theme-toggle');
-        
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-            if (themeToggleBtn) themeToggleBtn.textContent = '☀️';
-        }
-
+        if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); if (themeToggleBtn) themeToggleBtn.textContent = '☀️'; }
         if (themeToggleBtn) {
             themeToggleBtn.addEventListener('click', () => {
                 document.body.classList.toggle('dark-mode');
-                
-                if (document.body.classList.contains('dark-mode')) {
-                    themeToggleBtn.textContent = '☀️';
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    themeToggleBtn.textContent = '🌙';
-                    localStorage.setItem('theme', 'light');
-                }
+                if (document.body.classList.contains('dark-mode')) { themeToggleBtn.textContent = '☀️'; localStorage.setItem('theme', 'dark'); } 
+                else { themeToggleBtn.textContent = '🌙'; localStorage.setItem('theme', 'light'); }
             });
         }
     </script>

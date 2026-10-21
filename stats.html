@@ -14,10 +14,11 @@
         </div>
         <nav aria-label="Main Menu">
             <ul>
-                <li><a href="index.html">Home (Record)</a ></li>
+                <li><a href="index.html">Home</a ></li>
                 <li><a href="records.html">Records</a ></li>
                 <li><a href="stats.html" aria-current="page">Statistics</a ></li>
                 <li><a href="about.html">About</a ></li>
+                <li><a href="author.html">Author</a ></li>
             </ul>
         </nav>
     </header>
@@ -27,9 +28,7 @@
             <h2>📊 Data Analysis</h2>
             <p>Based on your current records, here is your spending overview:</p >
             <br>
-            <div id="stats-content">
-                <!-- JS will fill this -->
-            </div>
+            <div id="stats-content"></div>
         </section>
     </main>
 
@@ -41,18 +40,13 @@
         const STORAGE_KEY = 'accounting_records';
         const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         const statsEl = document.getElementById('stats-content');
-
         if (records.length === 0) {
             statsEl.innerHTML = '<p>No data available for analysis yet.</p >';
         } else {
             const count = records.length;
             const expenseRecords = records.filter(r => r.type === 'expense');
             let maxExpense = 0;
-            
-            expenseRecords.forEach(r => {
-                if (r.amount > maxExpense) maxExpense = r.amount;
-            });
-
+            expenseRecords.forEach(r => { if (r.amount > maxExpense) maxExpense = r.amount; });
             statsEl.innerHTML = `
                 <ul style="list-style-type: none; line-height: 2;">
                     <li>📌 Total of <strong>${count}</strong> records found.</li>
@@ -61,22 +55,13 @@
             `;
         }
 
-        // ========== Dark Mode Logic ==========
         const themeToggleBtn = document.getElementById('theme-toggle');
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-            if (themeToggleBtn) themeToggleBtn.textContent = '☀️';
-        }
+        if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); if (themeToggleBtn) themeToggleBtn.textContent = '☀️'; }
         if (themeToggleBtn) {
             themeToggleBtn.addEventListener('click', () => {
                 document.body.classList.toggle('dark-mode');
-                if (document.body.classList.contains('dark-mode')) {
-                    themeToggleBtn.textContent = '☀️';
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    themeToggleBtn.textContent = '🌙';
-                    localStorage.setItem('theme', 'light');
-                }
+                if (document.body.classList.contains('dark-mode')) { themeToggleBtn.textContent = '☀️'; localStorage.setItem('theme', 'dark'); } 
+                else { themeToggleBtn.textContent = '🌙'; localStorage.setItem('theme', 'light'); }
             });
         }
     </script>

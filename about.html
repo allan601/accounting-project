@@ -14,10 +14,11 @@
         </div>
         <nav aria-label="Main Menu">
             <ul>
-                <li><a href="index.html">Home (Record)</a ></li>
+                <li><a href="index.html">Home</a ></li>
                 <li><a href="records.html">Records</a ></li>
                 <li><a href="stats.html">Statistics</a ></li>
                 <li><a href="about.html" aria-current="page">About</a ></li>
+                <li><a href="author.html">Author</a ></li>
             </ul>
         </nav>
     </header>
@@ -26,11 +27,17 @@
         <section class="form-card">
             <h2>About This Project</h2>
             <br>
-            <p>This is a final project created for a front-end web development course.</p >
+            <p><strong>Simple Accounting</strong> is a lightweight, responsive web application designed to help users track their daily income and expenses effortlessly. This project was developed as a final assignment for a Front-End Web Development course.</p >
             <br>
-            <p>The website is built entirely using HTML, CSS, and Vanilla JavaScript. No server-side programming or databases are required or used.</p >
-            <br>
-            <p>All accounting data is stored locally in your browser's <strong>LocalStorage</strong>. Therefore, your records will be saved even if you close the webpage. However, please note that changing devices or clearing your browser data will result in data loss.</p >
+            <h3>✨ Key Features:</h3>
+            <ul style="margin-left: 20px; line-height: 1.8; margin-top: 10px; margin-bottom: 20px;">
+                <li><strong>Local Data Storage:</strong> All your records are securely saved in your browser's <em>LocalStorage</em>. No server or database is required, ensuring your financial data stays completely private on your device.</li>
+                <li><strong>Dark Mode Toggle:</strong> A built-in interactive theme switcher. Your preference is remembered across all pages and sessions.</li>
+                <li><strong>Real-time Summary:</strong> Automatically calculates your total balance, total income, and total expenses as you add new records.</li>
+                <li><strong>Responsive & Accessible:</strong> Built with semantic HTML5 and fully responsive CSS. It works perfectly on both desktop and mobile devices, and includes screen-reader-friendly labels (ARIA attributes).</li>
+            </ul>
+            <h3>🛠️ Technologies Used:</h3>
+            <p>HTML, CSS (Variables & Flexbox), Vanilla JavaScript (ES6).</p >
         </section>
     </main>
 
@@ -39,22 +46,13 @@
     </footer>
 
     <script>
-        // ========== Dark Mode Logic ==========
         const themeToggleBtn = document.getElementById('theme-toggle');
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-            if (themeToggleBtn) themeToggleBtn.textContent = '☀️';
-        }
+        if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); if (themeToggleBtn) themeToggleBtn.textContent = '☀️'; }
         if (themeToggleBtn) {
             themeToggleBtn.addEventListener('click', () => {
                 document.body.classList.toggle('dark-mode');
-                if (document.body.classList.contains('dark-mode')) {
-                    themeToggleBtn.textContent = '☀️';
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    themeToggleBtn.textContent = '🌙';
-                    localStorage.setItem('theme', 'light');
-                }
+                if (document.body.classList.contains('dark-mode')) { themeToggleBtn.textContent = '☀️'; localStorage.setItem('theme', 'dark'); } 
+                else { themeToggleBtn.textContent = '🌙'; localStorage.setItem('theme', 'light'); }
             });
         }
     </script>
