@@ -1,74 +1,76 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>首页 - 简易记账本</title>
+    <title>Home - Simple Accounting</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- 语义化标签：Header 和 Nav -->
     <header>
-        <h1>💰 简易记账本</h1>
-        <nav aria-label="主菜单">
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 600px; margin: 0 auto 10px;">
+            <h1 style="margin: 0;">💰 Simple Accounting</h1>
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Dark Mode">🌙</button>
+        </div>
+        <nav aria-label="Main Menu">
             <ul>
-                <li><a href="index.html" aria-current="page">首页 (记账)</a ></li>
-                <li><a href="records.html">消费明细</a ></li>
-                <li><a href="stats.html">统计圆表</a ></li>
-                <li><a href="about.html">关于本站</a ></li>
+                <li><a href=" " aria-current="page">Home (Record)</a ></li>
+                <li><a href="records.html">Records</a ></li>
+                <li><a href="stats.html">Statistics</a ></li>
+                <li><a href="about.html">About</a ></li>
             </ul>
         </nav>
     </header>
 
     <main class="container">
-        <!-- 数据汇总 -->
-        <section class="summary" aria-label="账目汇总">
+        <!-- Summary -->
+        <section class="summary" aria-label="Account Summary">
             <div class="summary-item">
-                <span>总余额</span>
+                <span>Total Balance</span>
                 <strong class="balance" id="balance">0</strong>
             </div>
             <div class="summary-item">
-                <span>总收入</span>
+                <span>Total Income</span>
                 <strong class="income" id="income">0</strong>
             </div>
             <div class="summary-item">
-                <span>总支出</span>
+                <span>Total Expense</span>
                 <strong class="expense" id="expense">0</strong>
             </div>
         </section>
 
-        <!-- 新增记录表单 -->
+        <!-- Add Record Form -->
         <section class="form-card">
-            <h2>新增记录</h2>
+            <h2>Add New Record</h2>
             <form id="record-form">
                 <div class="form-group">
-                    <label for="date" class="sr-only">日期</label>
+                    <label for="date" class="sr-only">Date</label>
                     <input type="date" id="date" required>
                     
-                    <label for="type" class="sr-only">类型</label>
+                    <label for="type" class="sr-only">Type</label>
                     <select id="type" required>
-                        <option value="expense">支出</option>
-                        <option value="income">收入</option>
+                        <option value="expense">Expense</option>
+                        <option value="income">Income</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="amount" class="sr-only">金额</label>
-                    <input type="number" id="amount" placeholder="金额" step="0.01" min="0" required>
+                    <label for="amount" class="sr-only">Amount</label>
+                    <input type="number" id="amount" placeholder="Amount" step="0.01" min="0" required>
                     
-                    <label for="note" class="sr-only">备注</label>
-                    <input type="text" id="note" placeholder="备注 (选填)">
+                    <label for="note" class="sr-only">Note</label>
+                    <input type="text" id="note" placeholder="Note (Optional)">
                 </div>
-                <button type="submit">新增记录</button>
+                <button type="submit">Add Record</button>
             </form>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2026 简易记账本作业</p >
+        <p>&copy; 2026 Simple Accounting Project</p >
     </footer>
 
     <script>
-        // 此处省略了获取和保存的代码，直接进行首页的渲染逻辑
+        // ========== Accounting Logic ==========
         const STORAGE_KEY = 'accounting_records';
         
         function getRecords() {
@@ -103,15 +105,35 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
             renderSummary();
             
-            // 重置表单并给予反馈
             document.getElementById('amount').value = '';
             document.getElementById('note').value = '';
-            alert('新增成功！可前往「消費明細」查看。');
+            alert('Record added successfully! Go to "Records" to view.');
         });
 
-        // 初始化日期并渲染
         document.getElementById('date').valueAsDate = new Date();
         renderSummary();
+
+        // ========== Dark Mode Logic ==========
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            if (themeToggleBtn) themeToggleBtn.textContent = '☀️';
+        }
+
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                
+                if (document.body.classList.contains('dark-mode')) {
+                    themeToggleBtn.textContent = '☀️';
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeToggleBtn.textContent = '🌙';
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+        }
     </script>
 </body>
 </html>

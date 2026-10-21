@@ -1,37 +1,40 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>统计图表示 - 简易记账本</title>
+    <title>Statistics - Simple Accounting</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>💰 简易记账本</h1>
-        <nav aria-label="主菜单">
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 600px; margin: 0 auto 10px;">
+            <h1 style="margin: 0;">💰 Simple Accounting</h1>
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Dark Mode">🌙</button>
+        </div>
+        <nav aria-label="Main Menu">
             <ul>
-                <li><a href="index.html">首页 (记账)</a ></li>
-                <li><a href="records.html">消费明细</a ></li>
-                <li><a href="stats.html" aria-current="page">统计图表示</a ></li>
-                <li><a href="about.html">关于本站</a ></li>
+                <li><a href=" ">Home (Record)</a ></li>
+                <li><a href="records.html">Records</a ></li>
+                <li><a href="stats.html" aria-current="page">Statistics</a ></li>
+                <li><a href="about.html">About</a ></li>
             </ul>
         </nav>
     </header>
 
     <main class="container">
         <section class="form-card">
-            <h2>📊 简易数据分析</h2>
-            <p>根据您目前的记录，以下是您的花费状况：</p >
+            <h2>📊 Data Analysis</h2>
+            <p>Based on your current records, here is your spending overview:</p >
             <br>
             <div id="stats-content">
-                <!-- 由 JS 填入 -->
+                <!-- JS will fill this -->
             </div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2026 简易记账本作业</p >
+        <p>&copy; 2026 Simple Accounting Project</p >
     </footer>
 
     <script>
@@ -40,7 +43,7 @@
         const statsEl = document.getElementById('stats-content');
 
         if (records.length === 0) {
-            statsEl.innerHTML = '<p>目前沒有資料可以分析。</p >';
+            statsEl.innerHTML = '<p>No data available for analysis yet.</p >';
         } else {
             const count = records.length;
             const expenseRecords = records.filter(r => r.type === 'expense');
@@ -52,10 +55,29 @@
 
             statsEl.innerHTML = `
                 <ul style="list-style-type: none; line-height: 2;">
-                    <li>📌 總計共有 <strong>${count}</strong> 筆紀錄。</li>
-                    <li>💸 單筆最高支出金額為：<strong style="color:var(--expense-color)">$${maxExpense.toFixed(2)}</strong></li>
+                    <li>📌 Total of <strong>${count}</strong> records found.</li>
+                    <li>💸 Highest single expense: <strong style="color:var(--expense-color)">$${maxExpense.toFixed(2)}</strong></li>
                 </ul>
             `;
+        }
+
+        // ========== Dark Mode Logic ==========
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            if (themeToggleBtn) themeToggleBtn.textContent = '☀️';
+        }
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    themeToggleBtn.textContent = '☀️';
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeToggleBtn.textContent = '🌙';
+                    localStorage.setItem('theme', 'light');
+                }
+            });
         }
     </script>
 </body>
