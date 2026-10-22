@@ -5,6 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statistics - Simple Accounting</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* 专门为图表加的样式 */
+        .chart-container {
+            margin-top: 20px;
+        }
+        .chart-row {
+            margin-bottom: 15px;
+        }
+        .chart-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .chart-bar-bg {
+            width: 100%;
+            height: 20px;
+            background-color: var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .chart-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease-in-out; /* 动画效果 */
+        }
+        .fill-income { background-color: var(--income-color); }
+        .fill-expense { background-color: var(--expense-color); }
+        .fill-category { background-color: #3498db; } /* 分类图表用蓝色 */
+    </style>
 </head>
 <body>
     <header>
@@ -25,10 +56,12 @@
 
     <main class="container">
         <section class="form-card">
-            <h2>📊 Data Analysis</h2>
-            <p>Based on your current records, here is your spending overview:</p >
+            <h2>📊 Data Visualization</h2>
+            <p>Based on your current records, here is your visual spending overview:</p >
             <br>
-            <div id="stats-content"></div>
+            <div id="stats-content">
+                <!-- JS 会把图表渲染到这里面 -->
+            </div>
         </section>
     </main>
 
@@ -40,21 +73,88 @@
         const STORAGE_KEY = 'accounting_records';
         const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         const statsEl = document.getElementById('stats-content');
+
         if (records.length === 0) {
-            statsEl.innerHTML = '<p>No data available for analysis yet.</p >';
+            statsEl.innerHTML = '<p style="text-align:center; color:#7f8c8d;">No data available for analysis yet. Add some records first!</p >';
         } else {
-            const count = records.length;
-            const expenseRecords = records.filter(r => r.type === 'expense');
-            let maxExpense = 0;
-            expenseRecords.forEach(r => { if (r.amount > maxExpense) maxExpense = r.amount; });
-            statsEl.innerHTML = `
-                <ul style="list-style-type: none; line-height: 2;">
-                    <li>📌 Total of <strong>${count}</strong> records found.</li>
-                    <li>💸 Highest single expense: <strong style="color:var(--expense-color)">$${maxExpense.toFixed(2)}</strong></li>
-                </ul>
+            // 1. 计算总收入与总支出
+            let totalIncome = 0;
+            let totalExpense = 0;
+            let expenseCategories = {}; // 用于记录分类支出 (备注作为分类)
+
+            records.forEach(r => {
+                if (r.type === 'income') {
+                    totalIncome += r.amount;
+                } else {
+                    totalExpense += r.amount;
+                    // 统计分类支出（如果没写备注，就叫 Uncategorized）
+                    let cat = r.note || 'Uncategorized';
+                    expenseCategories[cat] = (expenseCategories[cat] || 0) + r.amount;
+                }
+            });
+
+            const totalFlow = totalIncome + totalExpense;
+
+            // 2. 生成收入 vs 支出的 HTML 进度条
+            let incomePercent = totalFlow === 0 ? 0 : (totalIncome / totalFlow * 100).toFixed(1);
+            let expensePercent = totalFlow === 0 ? 0 : (totalExpense / totalFlow * 100).toFixed(1);
+
+            let html = `
+                <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Income vs Expense</h3>
+                <div class="chart-container">
+                    <div class="chart-row">
+                        <div class="chart-label">
+                            <span>Income</span>
+                            <span style="color: var(--income-color);">$${totalIncome.toFixed(2)} (${incomePercent}%)</span>
+                        </div>
+                        <div class="chart-bar-bg">
+                            <div class="chart-bar-fill fill-income" style="width: ${incomePercent}%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-row">
+                        <div class="chart-label">
+                            <span>Expense</span>
+                            <span style="color: var(--expense-color);">$${totalExpense.toFixed(2)} (${expensePercent}%)</span>
+                        </div>
+                        <div class="chart-bar-bg">
+                            <div class="chart-bar-fill fill-expense" style="width: ${expensePercent}%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <br><br>
+                <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Expense Breakdown by Note</h3>
+                <div class="chart-container">
             `;
+
+            // 3. 生成分类支出图表
+            if (totalExpense === 0) {
+                html += `<p style="color:#7f8c8d;">No expenses recorded yet.</p >`;
+            } else {
+                // 按金额从大到小排序
+                const sortedCategories = Object.entries(expenseCategories).sort((a, b) => b[1] - a[1]);
+                
+                sortedCategories.forEach(([category, amount]) => {
+                    let percent = (amount / totalExpense * 100).toFixed(1);
+                    html += `
+                        <div class="chart-row">
+                            <div class="chart-label">
+                                <span>📌 ${category}</span>
+                                <span>$${amount.toFixed(2)} (${percent}%)</span>
+                            </div>
+                            <div class="chart-bar-bg">
+                                <div class="chart-bar-fill fill-category" style="width: ${percent}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            html += `</div>`; // 结束 chart-container
+            statsEl.innerHTML = html;
         }
 
+        // ========== Dark Mode Logic ==========
         const themeToggleBtn = document.getElementById('theme-toggle');
         if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); if (themeToggleBtn) themeToggleBtn.textContent = '☀️'; }
         if (themeToggleBtn) {
